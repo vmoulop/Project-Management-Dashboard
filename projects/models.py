@@ -84,3 +84,37 @@ class Milestone(models.Model):
     def __str__(self):
         # Return the project title the Milestone belongs to
         return self.project.title
+    
+# Create the TeamRoster model
+class TeamRoster(models.Model):
+
+    # Possible health values for a project
+    ROLE_CHOICES = [
+        # Project Manager
+        ('pm', 'Project Manager'),
+        # Developer
+        ('dev', 'Developer'),
+        # QA
+        ('qa', 'QA'),
+        # Other
+        ('other', 'Other'),
+    ]
+
+    # Relation with Project model
+    # One team member can be in multiple projects - Many-to-many to Project models
+    projects = models.ManyToManyField('Project', related_name='team')
+
+    # Attributes of the TeamRoster
+
+    # Name
+    name = models.CharField(max_length=150)
+
+    # Role
+    role = models.CharField(max_length=50, choices=ROLE_CHOICES, default='other')
+
+    # Capacity Percent
+    capacity_percent = models.DecimalField(max_digits=5, decimal_places=2, default=100)
+
+    def __str__(self):
+        # Return the name and role of the team member
+        return f"{self.name} ({self.role})"
