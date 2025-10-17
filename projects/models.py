@@ -82,8 +82,8 @@ class Milestone(models.Model):
     due_date = models.DateField(null=True, blank=True)
 
     def __str__(self):
-        # Return the project title the Milestone belongs to
-        return self.project.title
+        # Return the project's and Milestone's titles
+        return f"{self.project.title} - {self.title}"
     
 # Create the TeamRoster model
 class TeamRoster(models.Model):
@@ -118,3 +118,25 @@ class TeamRoster(models.Model):
     def __str__(self):
         # Return the name and role of the team member
         return f"{self.name} ({self.role})"
+    
+# Create the RecentActivityEvent model
+class RecentActivityEvent(models.Model):
+
+    # Relation with Project model
+    # Each activity event corresponds to one project - ForeignKey to Project models
+    project = models.ForeignKey('Project', related_name='events', on_delete=models.CASCADE)
+
+    # Attributes of the RecentActivityEvent
+    
+    # Who performed the event
+    created_by = models.CharField(max_length=150, blank=True)
+
+    # Description of the event
+    description = models.TextField(blank=True)
+
+    # Timestamp
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        # Return the title of the project, the description of the event, who created and when
+        return f"[{self.project.title}] {self.description} by {self.created_by} at {self.created_at}"
