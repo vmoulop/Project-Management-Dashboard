@@ -62,3 +62,25 @@ class Project(models.Model):
     def __str__(self):
         # Return the string representation of the Project (its title)
         return self.title
+    
+# Create the Milestone model
+class Milestone(models.Model):
+    
+    # Relation with Project model
+    # Each milestone belongs to one project - ForeignKey to Project models
+    project = models.ForeignKey('Project', related_name='milestones', on_delete=models.CASCADE)
+
+    # Attributes of the Milestone
+
+    # Title
+    title = models.CharField(max_length=255)
+    
+    # Description
+    description = models.TextField(blank=True)
+
+    # Due date
+    due_date = models.DateField(null=True, blank=True)
+
+    def __str__(self):
+        # Return the project title the Milestone belongs to
+        return self.project.title
