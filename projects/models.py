@@ -81,6 +81,12 @@ class Milestone(models.Model):
     # Due date
     due_date = models.DateField(null=True, blank=True)
 
+    # Progress (0.00%-100.00%)
+    progress = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+
+    # Weight
+    weight = models.DecimalField(max_digits=5, decimal_places=2, default=1)
+
     def __str__(self):
         # Return the project's and Milestone's titles
         return f"{self.project.title} - {self.title}"
