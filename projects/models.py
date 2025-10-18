@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.postgres.indexes import GinIndex
+from django.contrib.postgres.search import SearchVectorField
 
 # Create the Project model
 class Project(models.Model):
@@ -62,6 +64,16 @@ class Project(models.Model):
     def __str__(self):
         # Return the string representation of the Project (its title)
         return self.title
+    
+    # This field stores the full-text search vector
+    search_vector = SearchVectorField(null=True)
+    
+    # Created a GIN (Generalized Inverted Index) on the search_vector.
+    # This improves performance of PostgreSQL full-text search queries
+    class Meta:
+        indexes = [
+            GinIndex(fields=['search_vector']),
+                   ]
     
 # Create the Milestone model
 class Milestone(models.Model):

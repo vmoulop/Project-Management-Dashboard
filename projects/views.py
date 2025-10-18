@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Project, Milestone, TeamRoster, RecentActivityEvent
 from .serializers import ProjectSerializer, MilestoneSerializer, TeamRosterSerializer, RecentActivityEventSerializer
+from django.contrib.postgres.search import SearchQuery
 
 # ViewSet for Project model
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -15,9 +16,14 @@ class ProjectViewSet(viewsets.ModelViewSet):
     # Ordering by last_updated, status, owner, tags, health
     ordering_fields = ['last_updated', 'status', 'owner', 'tags', 'health']
 
-    # By default show only non-deleted projects, ordered by last_updated descending
+    # By default (without filtering) show only non-deleted projects, ordered by last_updated descending
     def get_queryset(self):
-        return Project.objects.filter(deleted=False).order_by('-last_updated')
+        qs = Project.objects.filter(deleted=False).order_by('-last_updated')
+        search_param = self.request.query_params.get('search', None)
+        if search_param:
+            query = SearchQuery(search_param)
+            qs = qs.filter(search_vector=query)
+        return qs
     
     # Override default destroy to support soft delete
     def destroy(self, request, *args, **kwargs):
