@@ -6,6 +6,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .models import Project, Milestone, TeamRoster, RecentActivityEvent
 from .serializers import ProjectSerializer, MilestoneSerializer, TeamRosterSerializer, RecentActivityEventSerializer
 from django.contrib.postgres.search import SearchQuery
+from django.db import transaction
 
 # ViewSet for Project model
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -49,6 +50,45 @@ class ProjectViewSet(viewsets.ModelViewSet):
         project.save(update_fields=['deleted', 'last_updated'])
         return Response(self.get_serializer(project).data)
     
+    # Bulk update status or tags for multiple projects
+    @action(detail=False, methods=['post'])
+    def bulk_update(self, request):
+        project_ids = request.data.get('project_ids', [])
+        new_status = request.data.get('status')
+        new_tags = request.data.get('tags')
+        client_version = request.data.get('version')
+
+        if not project_ids:
+            return Response({"detail": "No project_ids provided."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Fetch all projects
+        projects = Project.objects.filter(id__in=project_ids)
+
+        # Optimistic concurrency check
+        if client_version is not None:
+            for project in projects:
+                if project.version != client_version:
+                    return Response(
+                        {"detail": f"Project {project.id} version mismatch."},
+                        status=status.HTTP_409_CONFLICT
+                    )
+
+        # All database operations below are treated as a single transaction (atomic update)
+        try:
+            with transaction.atomic():
+                for project in projects:
+                    if new_status:
+                        project.status = new_status
+                    if new_tags is not None:
+                        project.tags = new_tags
+                    # Increment version after successful update
+                    project.version += 1
+                    project.save()
+        except Exception as e:
+            return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response({"detail": "Projects updated successfully."}, status=status.HTTP_200_OK)
+
 # ViewSet for Milestone model
 class MilestoneViewSet(viewsets.ModelViewSet):
     queryset = Milestone.objects.all().order_by('due_date')
