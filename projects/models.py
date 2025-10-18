@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
+from django.db.models import Sum, F
 
 # Create the Project model
 class Project(models.Model):
@@ -61,10 +62,6 @@ class Project(models.Model):
     # Optimistic concurrency safeguard (version)
     version = models.IntegerField(default=1)
 
-    def __str__(self):
-        # Return the string representation of the Project (its title)
-        return self.title
-    
     # This field stores the full-text search vector
     search_vector = SearchVectorField(null=True)
     
@@ -74,7 +71,24 @@ class Project(models.Model):
         indexes = [
             GinIndex(fields=['search_vector']),
                    ]
+
+    def __str__(self):
+        # Return the string representation of the Project (its title)
+        return self.title
     
+    # Update project's progress based on the progress of its milestones
+    def update_progress(self):
+        milestones = self.milestones.all()
+        total_weight = milestones.aggregate(total=Sum('weight'))['total'] or 0
+        if total_weight == 0:
+            self.progress = 0
+        else:
+            weighted_progress = milestones.aggregate(
+                total=Sum(F('progress') * F('weight'))
+            )['total'] or 0
+            self.progress = round(weighted_progress / total_weight, 2)
+        self.save(update_fields=['progress', 'last_updated'])
+ 
 # Create the Milestone model
 class Milestone(models.Model):
     
