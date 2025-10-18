@@ -16,9 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+import django_eventstream
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     # All API endpoints prefixed with /api/
     path('api/', include('projects.urls')),
+    # SSE endpoints for real-time updates
+    path('events/', include(django_eventstream.urls), {
+        'channels': ['projects', 'activities'],
+    }),
 ]
