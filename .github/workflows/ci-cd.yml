@@ -68,7 +68,7 @@ jobs:
         run: npm run build
 
   # CD
-  deploy-simulated:
+  deploy:
     runs-on: ubuntu-latest
     needs: build
 
