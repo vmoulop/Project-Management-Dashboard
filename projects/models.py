@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.postgres.indexes import GinIndex
-from django.contrib.postgres.search import SearchVectorField
+from django.contrib.postgres.search import SearchVectorField, SearchVector
 from django.db.models import Sum, F
 
 # Create the Project model
@@ -88,6 +88,9 @@ class Project(models.Model):
             )['total'] or 0
             self.progress = round(weighted_progress / total_weight, 2)
         self.save(update_fields=['progress', 'last_updated'])
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
  
 # Create the Milestone model
 class Milestone(models.Model):

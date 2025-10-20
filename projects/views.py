@@ -5,25 +5,35 @@ from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Project, Milestone, TeamRoster, RecentActivityEvent
 from .serializers import ProjectSerializer, MilestoneSerializer, TeamRosterSerializer, RecentActivityEventSerializer
-from django.contrib.postgres.search import SearchQuery
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.db import transaction
+from .filters import ProjectFilter
+from django.db.models import Q
 
 # ViewSet for Project model
 class ProjectViewSet(viewsets.ModelViewSet):
     serializer_class = ProjectSerializer
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     # Filtering by status, owner, tags, health
-    filterset_fields = ['status', 'owner', 'tags', 'health']
+    filterset_class = ProjectFilter
     # Ordering by last_updated, status, owner, tags, health
     ordering_fields = ['last_updated', 'status', 'owner', 'tags', 'health']
 
     # By default (without filtering) show only non-deleted projects, ordered by last_updated descending
     def get_queryset(self):
-        qs = Project.objects.filter(deleted=False).order_by('-last_updated')
+        qs = Project.objects.all().order_by('-last_updated')
         search_param = self.request.query_params.get('search', None)
+        tag_param = self.request.query_params.get('tags', None)
         if search_param:
-            query = SearchQuery(search_param)
-            qs = qs.filter(search_vector=query)
+             qs = qs.filter(
+                Q(title__icontains=search_param) |
+                Q(short_description__icontains=search_param) |
+                Q(tags__icontains=search_param)
+            )
+
+        if tag_param:
+            qs = qs.filter(tags__contains=[tag_param])
+
         return qs
     
     # Override default destroy to support soft delete
@@ -36,7 +46,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
     # Recover a soft-deleted project
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=['post'], url_path='recover')
     def recover(self, request, pk=None):
         try:
             project = Project.objects.get(pk=pk)
