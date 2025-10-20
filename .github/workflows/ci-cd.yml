@@ -22,7 +22,7 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U pm_user -d pm_db"
+          --health-cmd "pg_isready -U pm_user"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -41,11 +41,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r backend/requirements.txt
 
-      - name: Run backend tests
+      - name: Run migrations and tests
+        env:
+          DATABASE_NAME: pm_db
+          DATABASE_USER: pm_user
+          DATABASE_PASSWORD: pm_password
+          DATABASE_HOST: localhost
+          DATABASE_PORT: 5432
         run: |
           python manage.py migrate
           python manage.py test
-
+          
       # Setup Node for frontend
       - name: Setup Node.js
         uses: actions/setup-node@v3
