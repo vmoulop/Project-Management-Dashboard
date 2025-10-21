@@ -1,4 +1,5 @@
 import { Card, CardContent, Typography, Chip, LinearProgress, Stack, Button, Checkbox, Box } from '@mui/material';
+import FolderIcon from '@mui/icons-material/Folder';
 
 export default function ProjectCard({
   project={project},
@@ -19,7 +20,17 @@ export default function ProjectCard({
   const healthColor = healthColors[project.health] || '#9e9e9e';
 
   return (
-    <Card sx={{ mb: 2, height: '100%', display: 'flex', flexDirection: 'column', }}>
+    <Card sx={{ mb: 2, height: '100%', display: 'flex', flexDirection: 'column', 
+      backgroundColor:
+        project.health === 'green'
+          ? '#e8f5e9'
+          : project.health === 'yellow'
+          ? '#fffde7'
+          : project.health === 'red'
+          ? '#ffebee'
+          : 'background.paper',
+        borderRadius: 2, boxShadow: 3,
+    }}>
       <CardContent sx={{ flexGrow: 1 }}>
         <Stack direction="row" alignItems="center" spacing={1}>
           <Checkbox
