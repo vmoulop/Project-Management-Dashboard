@@ -23,10 +23,11 @@ class ProjectSerializer(serializers.ModelSerializer):
     milestones = MilestoneSerializer(many=True, read_only=True)
     team = TeamRosterSerializer(many=True, read_only=True)
     events = RecentActivityEventSerializer(many=True, read_only=True)
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
     
     class Meta:
         model = Project
         fields = ['id', 'title', 'short_description', 'owner', 'last_updated', 'progress',
             'tags', 'health', 'status', 'deleted', 'version',
-            'milestones', 'team', 'events']
+            'milestones', 'team', 'events', 'status_display']
         read_only_field = ['last_updated']

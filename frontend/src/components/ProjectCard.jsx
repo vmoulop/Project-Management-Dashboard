@@ -1,4 +1,4 @@
-import { Card, CardContent, Typography, Chip, LinearProgress, Stack, Button, Checkbox } from '@mui/material';
+import { Card, CardContent, Typography, Chip, LinearProgress, Stack, Button, Checkbox, Box } from '@mui/material';
 
 export default function ProjectCard({
   project={project},
@@ -9,6 +9,15 @@ export default function ProjectCard({
   onSelect,      // for bulk selection
   selected = false, // whether this project is currently selected
 }) {
+
+  const healthColors = {
+  green: '#4caf50',
+  yellow: '#ffeb3b',
+  red: '#f44336',
+  };
+
+  const healthColor = healthColors[project.health] || '#9e9e9e';
+
   return (
     <Card sx={{ mb: 2 }}>
       <CardContent>
@@ -31,9 +40,39 @@ export default function ProjectCard({
         </Stack>
 
         <LinearProgress variant="determinate" value={parseFloat(project.progress)} />
-        <Typography variant="caption" sx={{ mt: 1, display: 'block' }}>
-          Health: {project.health} | Last Updated: {new Date(project.last_updated).toLocaleString()}
+        <Typography variant="body2" color="text.secondary" align="center">
+          {`${Math.round(project.progress)}%`}
         </Typography>
+
+        <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}></Box>
+          <Typography variant="caption" sx={{ mt: 1, display: 'block' }}>
+            Satus: {project.status_display} | Last Updated: {new Date(project.last_updated).toLocaleString()}
+          </Typography>
+
+            <Box sx={{ display: 'flex', alignItems: 'center', ml: 2 }}>
+              <Typography variant="caption" sx={{ mr: 1 }}>
+                Health:
+              </Typography>
+
+              {/* Health bar */}
+              <Box
+                sx={{
+                  width: 60,
+                  height: 10,
+                  borderRadius: 5,
+                  backgroundColor: '#e0e0e0',
+                  overflow: 'hidden',
+                }}
+              >
+              <Box
+                sx={{
+                  width: '100%',
+                  height: '100%',
+                  backgroundColor: healthColor,
+                }}
+              />
+              </Box>
+        </Box>
 
         <Stack direction="row" spacing={1} sx={{ mt: 2, flexWrap: 'wrap' }}>
           <Button variant="outlined" onClick={() => onEdit(project)}>Edit</Button>
