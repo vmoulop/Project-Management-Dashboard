@@ -5,7 +5,7 @@ import axios from 'axios';
 export const fetchProjects = createAsyncThunk(
   'projects/fetchProjects',
   async ({ filters = {}, ordering = 'last_updated', search = '', page = 1 } = {}) => {
-    let url = `http://localhost:8000/api/projects/?page=${page}&`;
+    let url = `http://backend:8000/api/projects/?page=${page}&`;
 
     if (filters) {
       Object.keys(filters).forEach((key) => {

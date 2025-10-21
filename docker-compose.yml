@@ -16,15 +16,11 @@ services:
       - pm_network
 
   backend:
-    build:
-      context: .
-      dockerfile: backend/Dockerfile
+    image: vasmoul/project-dashboard-backend:latest
     container_name: pm_backend
     command: >
       sh -c "python manage.py migrate &&
              gunicorn backend.wsgi:application --bind 0.0.0.0:8000"
-    volumes:
-      - ./backend:/app/backend
     ports:
       - "8000:8000"
     depends_on:
@@ -40,9 +36,7 @@ services:
       - pm_network
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    image: vasmoul/project-dashboard-frontend:latest
     container_name: pm_frontend
     ports:
       - "3000:80"
