@@ -19,8 +19,8 @@ export default function ProjectCard({
   const healthColor = healthColors[project.health] || '#9e9e9e';
 
   return (
-    <Card sx={{ mb: 2 }}>
-      <CardContent>
+    <Card sx={{ mb: 2, height: '100%', display: 'flex', flexDirection: 'column', }}>
+      <CardContent sx={{ flexGrow: 1 }}>
         <Stack direction="row" alignItems="center" spacing={1}>
           <Checkbox
             checked={selected}

@@ -166,7 +166,7 @@ export default function ProjectList() {
       {creating && <ProjectForm onSubmit={handleCreate} onCancel={() => setCreating(false)} />}
       {editingProject && <ProjectForm initialData={editingProject} onSubmit={handleUpdate} onCancel={() => setEditingProject(null)} />}
 
-      <Grid container spacing={2}>
+      <Grid container spacing={2} alignItems="stretch">
         {projects.map(project => (
           <Grid item xs={12} sm={6} md={4} key={project.id}>
             <ProjectCard

@@ -95,27 +95,27 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 # Database for local development
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'pm_dashboard_db',
-        'USER': 'pm_admin',
-        'PASSWORD': 'pm_1234!',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
-
 #DATABASES = {
 #    'default': {
 #        'ENGINE': 'django.db.backends.postgresql',
-#        'NAME': os.environ.get('DATABASE_NAME', 'pm_db'),
-#        'USER': os.environ.get('DATABASE_USER', 'pm_user'),
-#        'PASSWORD': os.environ.get('DATABASE_PASSWORD', 'pm_password'),
-#        'HOST': os.environ.get('DATABASE_HOST', 'db'),
-#        'PORT': os.environ.get('DATABASE_PORT', '5432'),
+#        'NAME': 'pm_dashboard_db',
+#        'USER': 'pm_admin',
+#        'PASSWORD': 'pm_1234!',
+#        'HOST': 'localhost',
+#        'PORT': '5432',
 #    }
 #}
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DATABASE_NAME', 'pm_db'),
+        'USER': os.environ.get('DATABASE_USER', 'pm_user'),
+        'PASSWORD': os.environ.get('DATABASE_PASSWORD', 'pm_password'),
+        'HOST': os.environ.get('DATABASE_HOST', 'db'),
+        'PORT': os.environ.get('DATABASE_PORT', '5432'),
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
