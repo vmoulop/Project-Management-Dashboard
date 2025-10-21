@@ -8,12 +8,15 @@ import { Grid, MenuItem, Select, TextField, Box, Button, Stack } from '@mui/mate
 import Autocomplete from '@mui/material/Autocomplete';
 import ClearIcon from '@mui/icons-material/Clear';
 import IconButton from '@mui/material/IconButton';
+import { Pagination } from '@mui/material';
 
 export default function ProjectList() {
   const dispatch = useDispatch();
   const projects = useSelector(state => state.projects.list);
   const filters = useSelector(state => state.projects.filters);
   const ordering = useSelector(state => state.projects.ordering);
+  const page = useSelector(state => state.projects.page);
+  const totalPages = useSelector(state => state.projects.totalPages);
 
   const [creating, setCreating] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
@@ -42,6 +45,10 @@ export default function ProjectList() {
   const handleRecover = (id) => {
     console.log('Recovering project', id);
     dispatch(recoverProject(id));
+  };
+
+  const handlePageChange = (newPage) => {
+    dispatch(fetchProjects({ filters, ordering, search: searchText, page: newPage }));
   };
 
   const fetchSuggestions = (query) => {
@@ -181,6 +188,18 @@ export default function ProjectList() {
           </Grid>
         ))}
       </Grid>
+
+      <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
+        <Pagination
+          count={totalPages}
+          page={page}
+          onChange={(event, value) => handlePageChange(value)}
+          color="primary"
+          hidePrevButton
+          hideNextButton
+        />
+</Box>
+
     </>
   );
 }

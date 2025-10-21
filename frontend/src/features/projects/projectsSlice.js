@@ -4,8 +4,8 @@ import axios from 'axios';
 // Async thunk
 export const fetchProjects = createAsyncThunk(
   'projects/fetchProjects',
-  async ({ filters = {}, ordering = 'last_updated', search = '' } = {}) => {
-    let url = 'http://localhost:8000/api/projects/?';
+  async ({ filters = {}, ordering = 'last_updated', search = '', page = 1 } = {}) => {
+    let url = `http://localhost:8000/api/projects/?page=${page}&`;
 
     if (filters) {
       Object.keys(filters).forEach((key) => {
@@ -25,7 +25,13 @@ export const fetchProjects = createAsyncThunk(
     }
 
     const response = await axios.get(url);
-    return response.data.results; // .results for DRF pagination
+    return {
+      results: response.data.results,
+      count: response.data.count,
+      next: response.data.next,
+      previous: response.data.previous,
+      page, // keep track of the current page
+    }; // .results for DRF pagination
   }
 );
 
@@ -84,6 +90,11 @@ const projectsSlice = createSlice({
     status: 'idle',
     filters: { status: '', owner: '', tags: '', health: '' },
     ordering: 'last_updated',
+    page: 1,
+    totalPages: 1,
+    totalCount: 0,
+    next: null,
+    previous: null,
   },
   reducers: {
     setFilter(state, action) {
@@ -107,7 +118,15 @@ const projectsSlice = createSlice({
       })
       .addCase(fetchProjects.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.list = action.payload;
+        state.list = action.payload.results;
+        state.totalCount = action.payload.count;
+        state.next = action.payload.next;
+        state.previous = action.payload.previous;
+
+        // calculate total pages
+        const pageSize = 6; // same as DRF PAGE_SIZE
+        state.totalPages = Math.ceil(action.payload.count / pageSize);
+        state.page = action.payload.page;
       })
       .addCase(fetchProjects.rejected, (state) => {
         state.status = 'failed';
