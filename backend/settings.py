@@ -96,14 +96,14 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 # Database for local development
 #DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.postgresql',
-#        'NAME': 'pm_dashboard_db',
-#        'USER': 'pm_admin',
-#        'PASSWORD': 'pm_1234!',
-#        'HOST': 'localhost',
-#        'PORT': '5432',
-#    }
+#   'default': {
+#       'ENGINE': 'django.db.backends.postgresql',
+#       'NAME': 'pm_dashboard_db',
+#       'USER': 'pm_admin',
+#       'PASSWORD': 'pm_1234!',
+#       'HOST': 'localhost',
+#       'PORT': '5432',
+#   }
 #}
 
 DATABASES = {

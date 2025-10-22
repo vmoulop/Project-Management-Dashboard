@@ -36,13 +36,16 @@ services:
       - pm_network
 
   frontend:
-    image: vasmoul/project-dashboard-frontend:latest
+    build:
+      context: ./frontend   # path to your local frontend folder
+      dockerfile: Dockerfile
     container_name: pm_frontend
     ports:
       - "3000:80"
     networks:
       - pm_network
-
+    environment:
+      - REACT_APP_API_URL=http://backend:8000
 volumes:
   pgdata:
 
