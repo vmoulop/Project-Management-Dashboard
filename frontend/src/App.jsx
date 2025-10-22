@@ -6,9 +6,12 @@ import ProjectList from './components/ProjectList';
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import ProjectDetailPage from './components/ProjectDetailPage';
-
+import useProjectSSE from './hooks/useProjectSSE';
 
 function App() {
+  // Start listening to SSE events
+  useProjectSSE();
+  
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
